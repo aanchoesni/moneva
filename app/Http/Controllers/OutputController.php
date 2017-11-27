@@ -314,7 +314,7 @@ class OutputController extends Controller
         $excel->sheet($name, function ($sheet) use ($data) {
 
           $sheet->setMergeColumn(array(
-            'columns' => array('A', 'B', 'C', 'D', 'K'),
+            'columns' => array('A', 'B', 'C', 'D', 'L'),
             'rows' => array(
               array(1, 2),
               array(1, 2),
@@ -325,7 +325,7 @@ class OutputController extends Controller
           ));
 
           $sheet->mergeCells('E1:G1');
-          $sheet->mergeCells('H1:J1');
+          $sheet->mergeCells('H1:K1');
 
           $sheet->cell('A1', function ($cell) {
             $cell->setValue('No');
@@ -347,7 +347,7 @@ class OutputController extends Controller
             $cell->setValignment('center');
             $cell->setalignment('center');
           });
-          $sheet->cell('K1', function ($cell) {
+          $sheet->cell('L1', function ($cell) {
             $cell->setValue('Keterangan');
             $cell->setValignment('center');
             $cell->setalignment('center');
@@ -384,11 +384,16 @@ class OutputController extends Controller
             $cell->setalignment('center');
           });
           $sheet->cell('I2', function ($cell) {
-            $cell->setValue('Realisasi');
+            $cell->setValue('Satuan');
             $cell->setValignment('center');
             $cell->setalignment('center');
           });
           $sheet->cell('J2', function ($cell) {
+            $cell->setValue('Realisasi');
+            $cell->setValignment('center');
+            $cell->setalignment('center');
+          });
+          $sheet->cell('K2', function ($cell) {
             $cell->setValue('Persentase');
             $cell->setValignment('center');
             $cell->setalignment('center');
@@ -405,7 +410,8 @@ class OutputController extends Controller
             'H' => 12,
             'I' => 12,
             'J' => 12,
-            'K' => 30
+            'K' => 12,
+            'L' => 30
           ));
 
           $row = 2;
@@ -420,6 +426,7 @@ class OutputController extends Controller
               $value->anggaran_terserap,
               $value->anggaran_persen,
               $value->target,
+              $value->satuan,
               $value->realisasi,
               $value->total_progres,
               $value->keterangan,
