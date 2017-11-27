@@ -10,6 +10,7 @@ use Alert;
 use Session;
 use Excel;
 use DB;
+use App\Helpers\InseoHelper;
 
 class MasterRbaController extends Controller
 {
@@ -61,7 +62,9 @@ class MasterRbaController extends Controller
     }
     public function index()
     {
-        $data = MasterRba::orderBy('program', 'asc')->whereNotNull('unit_kerja')->get();
+        // $child = MasterRba::orderBy('program', 'asc')->whereNotNull('unit_kerja')->get();
+        $data = MasterRba::whereNull('no_rba_induk')->get();
+        // $data = MasterRba::orderBy('program', 'asc')->get();
 
         return view('masterrba.index', compact('data'));
     }
@@ -174,5 +177,152 @@ class MasterRbaController extends Controller
       } catch (\Exception $id) {
           return redirect('masterrba');
       }
+    }
+
+    public function downloadrba()
+    {
+      $data = MasterRba::whereNull('no_rba_induk')->get();
+
+      $name = 'RBA ' . $data[0]->tahun;
+      Excel::create($name, function ($excel) use ($data) {
+              // Set the properties
+        $name = 'RBA ' . $data[0]->tahun;
+        $excel->setTitle($name)
+          ->setCreator('Moneva FMIPA ' . date('Y'));
+        $excel->sheet($name, function ($sheet) use ($data) {
+
+          $sheet->setMergeColumn(array(
+            'columns' => array('A', 'B', 'C', 'D', 'K'),
+            'rows' => array(
+              array(1, 2),
+              array(1, 2),
+              array(1, 2),
+              array(1, 2),
+              array(1, 2),
+            ),
+          ));
+
+          $sheet->mergeCells('E1:G1');
+          $sheet->mergeCells('H1:J1');
+
+          $sheet->cell('A1', function ($cell) {
+            $cell->setValue('No');
+            $cell->setValignment('center');
+            $cell->setalignment('center');
+          });
+          $sheet->cell('B1', function ($cell) {
+            $cell->setValue('Unit');
+            $cell->setValignment('center');
+            $cell->setalignment('center');
+          });
+          $sheet->cell('C1', function ($cell) {
+            $cell->setValue('No. RBA');
+            $cell->setValignment('center');
+            $cell->setalignment('center');
+          });
+          $sheet->cell('D1', function ($cell) {
+            $cell->setValue('Nama Kegiatan');
+            $cell->setValignment('center');
+            $cell->setalignment('center');
+          });
+          $sheet->cell('K1', function ($cell) {
+            $cell->setValue('Keterangan');
+            $cell->setValignment('center');
+            $cell->setalignment('center');
+          });
+
+          $sheet->cell('E1', function ($cell) {
+            $cell->setValue('Anggaran');
+            $cell->setValignment('center');
+            $cell->setalignment('center');
+          });
+          $sheet->cell('H1', function ($cell) {
+            $cell->setValue('Output');
+            $cell->setValignment('center');
+            $cell->setalignment('center');
+          });
+          $sheet->cell('E2', function ($cell) {
+            $cell->setValue('Pagu');
+            $cell->setValignment('center');
+            $cell->setalignment('center');
+          });
+          $sheet->cell('F2', function ($cell) {
+            $cell->setValue('Realisasi');
+            $cell->setValignment('center');
+            $cell->setalignment('center');
+          });
+          $sheet->cell('G2', function ($cell) {
+            $cell->setValue('Persentase');
+            $cell->setValignment('center');
+            $cell->setalignment('center');
+          });
+          $sheet->cell('H2', function ($cell) {
+            $cell->setValue('Target');
+            $cell->setValignment('center');
+            $cell->setalignment('center');
+          });
+          $sheet->cell('I2', function ($cell) {
+            $cell->setValue('Realisasi');
+            $cell->setValignment('center');
+            $cell->setalignment('center');
+          });
+          $sheet->cell('J2', function ($cell) {
+            $cell->setValue('Persentase');
+            $cell->setValignment('center');
+            $cell->setalignment('center');
+          });
+
+          $sheet->setWidth(array(
+            'A' => 6,
+            'B' => 20,
+            'C' => 20,
+            'D' => 40,
+            'E' => 20,
+            'F' => 20,
+            'G' => 20,
+            'H' => 12,
+            'I' => 12,
+            'J' => 12,
+            'K' => 30
+          ));
+
+          $row = 2;
+          $no = 1;
+          foreach ($data as $value) {
+            $sheet->row(++$row, array(
+              $no,
+              $value->unit_kerja,
+              $value->no_rba,
+              $value->sub_program,
+              $value->anggaran_pagu,
+              $value->anggaran_terserap,
+              $value->anggaran_persen,
+              $value->target,
+              $value->realisasi,
+              $value->total_progres,
+              $value->keterangan,
+            ));
+            $no++;
+
+            $noc = 1;
+            foreach (InseoHelper::child($value->no_rba) as $v) {
+              $sheet->row(++$row, array(
+                $noc,
+                $v->unit_kerja,
+                $v->no_rba,
+                $v->sub_program,
+                $v->anggaran_pagu,
+                $v->anggaran_terserap,
+                $v->anggaran_persen,
+                $v->target,
+                $v->realisasi,
+                $v->total_progres,
+                $v->keterangan,
+              ));
+              $noc++;
+            }
+          }
+        });
+      })->export('xls');
     }
 }

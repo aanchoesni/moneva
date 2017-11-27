@@ -19,8 +19,9 @@
             <header class="panel-heading">
                 Master RBA
             </header>
-            <br><span style="padding-left: 15px"><a href="{{URL::to('master_rba/create')}}" class="btn btn-info"><i class="fa fa-plus"></i> Tambah</a></span>
-            <a href="#importexcel" data-toggle="modal" data-target="#importexcel" class="modalLink btn btn-success"><i class="fa fa-upload"></i> Import Excel</a>
+            {{--  <br><span style="padding-left: 15px"><a href="{{URL::to('master_rba/create')}}" class="btn btn-info"><i class="fa fa-plus"></i> Tambah</a></span>  --}}
+            <br><span style="padding-left: 15px"><a href="#importexcel" data-toggle="modal" data-target="#importexcel" class="modalLink btn btn-success"><i class="fa fa-upload"></i> Import Excel</a></span>
+            <a href="{!! url('downloadrba') !!}" class="btn btn-info"><i class="fa fa-download"></i> Eksport Excel</a>
             <div class="panel-body"  style:"overflow: scroll;">
               <div class="adv-table">
                   <table class="display table table-bordered table-striped" id="">
@@ -48,8 +49,13 @@
                           <td style="text-align:center;"><?php echo $no++ ?></td>
                           <td>
                             <div style="color: red;">{!! $value->no_rba !!}</div>
+                            @if($value->sub_program == null)
+                            {!! $value->program !!}
+                            @endif
+                            @if($value->sub_program != null)
                             {!! $value->sub_program !!}
                             <div style="color: green;">({!! strtoupper($value->unit_kerja) !!})</div>
+                            @endif
                           </td>
                           <td>Rp {!! number_format($value->anggaran_pagu, 0) !!}</td>
                           <td>Rp {!! number_format($value->anggaran_terserap, 0) !!}</td>
@@ -80,6 +86,36 @@
                             {{ Form::close() }}
                           </td> --}}
                         </tr>
+                          <?php $noc = 1; ?>
+                          @foreach (InseoHelper::child($value->no_rba) as $v)
+                          <tr>
+                            <td></td>
+                            <td>
+                              <table>
+                                <tr>
+                                  <td style="text-align:center;"><?php echo $noc++ ?></td>
+                                  <td>
+                                    <div style="color: red;">{!! $v->no_rba !!}</div>
+                                    @if($v->sub_program == null)
+                                    {!! $v->program !!}
+                                    @endif
+                                    @if($v->sub_program != null)
+                                    {!! $v->sub_program !!}
+                                    <div style="color: green;">({!! strtoupper($v->unit_kerja) !!})</div>
+                                    @endif
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                            <td>Rp {!! number_format($v->anggaran_pagu, 0) !!}</td>
+                            <td>Rp {!! number_format($v->anggaran_terserap, 0) !!}</td>
+                            <td style="text-align: center;">{!! number_format($v->anggaran_persen, 0) !!}%</td>
+                            <td style="text-align: center;">{!! $v->target !!}<div style="color: red;">{!! $v->satuan !!}</div></td>
+                            <td style="text-align: center;">{!! $v->realisasi !!}</td>
+                            <td style="text-align: center;">{!! number_format($v->total_progres, 0) !!}%</td>
+                            <td>{!! $v->keterangan !!}</td>
+                          </tr>
+                          @endforeach
                         @endforeach
                       </tbody>
                   </table>

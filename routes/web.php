@@ -38,4 +38,6 @@ Route::group(['middleware' => 'role:admin'], function () {
   Route::post('uploadexcel', ['as' => 'uploadexcel', 'uses' => 'MasterRbaController@uploadexcel']);
 
   Route::resource('user', 'UsersController');
+
+  Route::get('downloadrba', 'MasterRbaController@downloadrba')->name('downloadrba');
 });
