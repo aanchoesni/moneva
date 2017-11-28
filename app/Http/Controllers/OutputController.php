@@ -31,18 +31,38 @@ class OutputController extends Controller
 
     public function index(Request $request)
     {
-      $txtahun = $request->input('tahun');
-      $txunit = $request->input('unit');
-      $filter = strtolower($request->input('filter'));
+      // dd($request->input('tahun'));
+      if (!Session::has('ss_adm_tahun')) {
+        Session::put('ss_adm_tahun', Date('Y'));
+      } else if (Session::has('ss_adm_tahun')) {
+        $txtahun = $request->input('tahun');
+        Session::put('ss_adm_tahun', $txtahun);
+      }
 
-      Session::put('ss_adm_tahun', $txtahun);
-      Session::put('ss_adm_unit', $txunit);
+      if (!Session::has('ss_adm_unit')) {
+        Session::put('ss_adm_unit', 'fakultas');
+      } else if (Session::has('ss_adm_unit')) {
+        $txunit = $request->input('unit');
+        Session::put('ss_adm_unit', $txunit);
+      }
+
+      $filter = strtolower($request->input('filter'));
       Session::put('ss_adm_filter', $filter);
 
       $tahun = MasterRba::groupBy('tahun')->pluck('tahun', 'tahun');
       $unit = MasterRba::whereNotNull('unit_kerja')->groupBy('unit_kerja')->pluck('unit_kerja', 'unit_kerja');
+      $unit->prepend('Fakultas', 'fakultas');
 
-      $data = MasterRba::orderBy('no_rba', 'asc')->where('unit_kerja', Session::get('ss_adm_unit'))->where('tahun', Session::get('ss_adm_tahun'))->whereNotNull('unit_kerja');
+      $data = MasterRba::orderBy('no_rba', 'asc')->whereNotNull('unit_kerja');
+
+      if (Session::get('ss_adm_unit') != 'fakultas') {
+        $data = $data->where('unit_kerja', Session::get('ss_adm_unit'));
+      }
+
+      if (Session::get('ss_adm_tahun')) {
+        $data = $data->where('tahun', Session::get('ss_adm_tahun'));
+      }
+
       if(Session::get('ss_adm_filter') != null || Session::get('ss_adm_filter') != ''){
         $data = $data->WhereRaw("lower(sub_program) LIKE '%$filter%'");
       }
@@ -53,11 +73,16 @@ class OutputController extends Controller
 
     public function jurusan(Request $request)
     {
-      $txtahun = $request->input('tahun');
       $txunit = Session::get('ss_unit');
       $filter = strtolower($request->input('filter'));
 
-      Session::put('ss_adm_tahun', $txtahun);
+      if (!Session::has('ss_adm_tahun')) {
+        Session::put('ss_adm_tahun', Date('Y'));
+      } else {
+        $txtahun = $request->input('tahun');
+        Session::put('ss_adm_tahun', $txtahun);
+      }
+
       Session::put('ss_adm_unit', $txunit);
       Session::put('ss_adm_filter', $filter);
 
@@ -299,7 +324,16 @@ class OutputController extends Controller
 
     public function download1()
     {
-      $data = MasterRba::orderBy('program', 'asc')->where('unit_kerja', Session::get('ss_adm_unit'))->where('tahun', Session::get('ss_adm_tahun'))->whereNotNull('unit_kerja');
+      $data = MasterRba::orderBy('no_rba', 'asc')->whereNotNull('unit_kerja');
+
+      if (Session::get('ss_adm_unit') != 'fakultas') {
+        $data = $data->where('unit_kerja', Session::get('ss_adm_unit'));
+      }
+
+      if (Session::get('ss_adm_tahun')) {
+        $data = $data->where('tahun', Session::get('ss_adm_tahun'));
+      }
+
       if (Session::get('ss_adm_filter') != null || Session::get('ss_adm_filter') != '') {
         $data = $data->WhereRaw("lower(sub_program) LIKE '%$filter%'");
       }

@@ -4,6 +4,7 @@
 <div class="container">
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
+            <div style="text-align: center;"><h2>Sistem Informasi <span style="font-weight: bold; color: blue;">Monitoring dan Evaluasi</span></h2></div>
             <div class="panel panel-default">
                 <div class="panel-heading">Login</div>
 

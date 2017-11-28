@@ -17,7 +17,7 @@
     <div class="col-lg-12">
         <section class="panel">
             <header class="panel-heading">
-                Output
+                Realisasi
             </header>
             <div class="form-inline">
               <div class="form-group">
@@ -56,7 +56,7 @@
                 {{ Form::close() }}
               </div>
               @endif
-              @if (Session::get('ss_adm_tahun') && Session::get('ss_adm_unit'))
+              @if (Session::get('ss_adm_tahun'))
               <div class="form-group">
                 {{ Form::open(array('url' => route('download1'), 'method' => 'get', 'style'=>'padding-left: 15px; padding-top: 15px;')) }}
                 <button type="submit" class="btn btn-success"><i class="fa fa-download"></i> Download</button>

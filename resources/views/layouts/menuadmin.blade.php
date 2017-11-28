@@ -30,7 +30,7 @@
     </a>
 </li>
 @endif
-@if (Session::get('role') == 'jurusan')
+@if (Session::get('ss_role') == 'jurusan')
 <li>
     <a href="{!! url('jurusan') !!}">
         <i class="fa fa-tasks"></i>
